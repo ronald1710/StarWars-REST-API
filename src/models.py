@@ -1,22 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-
-    def __repr__(self):
-        return '<User %r>' % self.username
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "email": self.email,
-            # do not serialize the password, its a security breach
-        }
 
 class Planets(db.Model):
     __tablename__ = 'planets'
@@ -88,7 +73,10 @@ class Favorite_planets(db.Model):
     __tablename__ = 'favorite_planets'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    planets_name = db.Column(db.String(150), nullable=False)
     planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
+    usuario = db.relationship(Usuario)
+    planets = db.relationship(Planets)
 
     def __repr__(self):
         return '<Favorite_planets %r>' % self.name
@@ -105,7 +93,10 @@ class Favorite_characters(db.Model):
     __tablename__ = 'favorite_characters'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    characters_name = db.Column(db.String(150),  nullable=False)
     character_id = db.Column(db.Integer, db.ForeignKey('characters.id'))
+    usuario = db.relationship(Usuario)
+    characters = db.relationship(Characters)
 
     def __repr__(self):
         return '<Favorite_characters %r>' % self.name

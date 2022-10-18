@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planets, Characters, Usuario, Favorite_planets, Favorite_characters
+from models import db, Planets, Characters, Usuario, Favorite_planets, Favorite_characters
 #from models import Person
 
 app = Flask(__name__)
@@ -71,14 +71,16 @@ def get_usuarios():
     result = list(map(lambda usuario: usuario.serialize(), usuarios))
     return jsonify(result), 200
 
-@app.route('/usuario/<int:usuario_id>/favorite_planets', methods=['GET'])
-def get_usuario_favorite_planets():
-    usuario_favorite_planets =     Usuario.query.filter().all()
-
-
-    result = list(map(lambda usuario: usuario.serialize(), usuarios))
-    return jsonify(result), 200
-
+@app.route('/addfavoriteplanet/<int:id>/', methods=['POST'])
+def add_planet(id):
+    planet_query = Planets.query.get(id)
+    favorite_planet = Favorite_planets(planet_name=planet_query.planet_name)
+    db.session.add(favorite_planet)
+    db.session.commit()
+    respuesta = {
+    "message": "favorito agregado exitosamente"
+    }
+    return jsonify(respuesta), 200
 
 
 
