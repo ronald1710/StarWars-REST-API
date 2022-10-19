@@ -82,10 +82,26 @@ def add_planet(id):
     }
     return jsonify(respuesta), 200
 
+@app.route('/addfavoritecharacter/<int:id>/', methods=['POST'])
+def add_character(id):
+    character_query = Characters.query.get(id)
+    favorite_character = Favorite_characters(character_name=character_query.character_name)
+    db.session.add(favorite_character)
+    db.session.commit()
+    respuesta = {
+    "message": "favorito agregado exitosamente"
+    }
+    return jsonify(respuesta), 200
 
-
-
-   
+@app.route('/deletefavoriteplanet/<int:id>/', methods=['DELETE'])
+def delete_favorite_planet(id):
+    delete_planet = Favorite_planets.query.get(id)
+    if delete_planet is None:
+        raise APIException('User not found', status_code=404)
+    #else:
+        db.session.delete(delete_planet)
+        db.session.commit()
+    return jsonify(Favorite_planets),200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
