@@ -71,10 +71,13 @@ def get_usuarios():
     result = list(map(lambda usuario: usuario.serialize(), usuarios))
     return jsonify(result), 200
 
-@app.route('/addfavoriteplanet/<int:id>/', methods=['POST'])
-def add_planet(id):
+
+
+@app.route('/addfavoriteplanet/<int:id>/usuario/<int:id_usuario>', methods=['POST'])
+def add_planet(id, id_usuario):
     planet_query = Planets.query.get(id)
-    favorite_planet = Favorite_planets(planet_name=planet_query.planet_name)
+    usuario_query = Usuario.query.get(id_usuario)
+    favorite_planet = Favorite_planets(planet_name=planet_query.planet_name, user_id= usuario_query.id)
     db.session.add(favorite_planet)
     db.session.commit()
     respuesta = {
@@ -82,10 +85,11 @@ def add_planet(id):
     }
     return jsonify(respuesta), 200
 
-@app.route('/addfavoritecharacter/<int:id>/', methods=['POST'])
-def add_character(id):
+@app.route('/addfavoritecharacter/<int:id>/usuario/<int:id_usuario>', methods=['POST'])
+def add_character(id, id_usuario):
     character_query = Characters.query.get(id)
-    favorite_character = Favorite_characters(character_name=character_query.character_name)
+    usuario_query = Usuario.query.get(id_usuario)
+    favorite_character = Favorite_characters(character_name=character_query.character_name, user_id= usuario_query.id)
     db.session.add(favorite_character)
     db.session.commit()
     respuesta = {
@@ -93,15 +97,24 @@ def add_character(id):
     }
     return jsonify(respuesta), 200
 
-@app.route('/deletefavoriteplanet/<int:id>/', methods=['DELETE'])
-def delete_favorite_planet(id):
+@app.route('/deletefavoriteplanet/<int:id>/usuario/<int:id_usuario>', methods=['DELETE'])
+def delete_favorite_planet(id, id_usuario):
     delete_planet = Favorite_planets.query.get(id)
-    if delete_planet is None:
-        raise APIException('User not found', status_code=404)
-    #else:
-        db.session.delete(delete_planet)
-        db.session.commit()
-    return jsonify(Favorite_planets),200
+    print(delete_planet)
+    usuario_query = Usuario.query.get(id_usuario)
+    print(usuario_query)
+    #if delete_planet is None:
+        #raise APIException('User not found', status_code=404)
+    #delete_planet = Favorite_planets(planet_name=planet_query.planet_name, user_id= usuario_query.id)
+    #db.session.pop(delete_planet)
+    #db.session.commit()
+    #respuesta = {
+    #"message": "favorito eliminado exitosamente"
+    #}
+   # return jsonify(respuesta), 200
+    #    db.session.delete(delete_planet)
+     #   db.session.commit()
+    #return jsonify(Favorite_planets),200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
