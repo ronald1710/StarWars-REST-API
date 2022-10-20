@@ -21,14 +21,19 @@ CORS(app)
 setup_admin(app)
 
 # Handle/serialize errors like a JSON object
+
+
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
+
+
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
+
 
 @app.route('/user', methods=['GET'])
 def handle_hello():
@@ -39,18 +44,21 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+
 @app.route('/planets', methods=['GET'])
 def get_planets():
     planets = Planets.query.filter().all()
     result = list(map(lambda planet: planet.serialize(), planets))
     return jsonify(result), 200
 
+
 @app.route('/planets/<int:planet_id>', methods=['GET'])
 def get_planet(planet_id):
     planet = Planets.query.get(planet_id)
     if planet == None:
-        return jsonify({"msg":"Planeta no existe"}), 404
+        return jsonify({"msg": "Planeta no existe"}), 404
     return jsonify(planet.serialize()), 200
+
 
 @app.route('/characters', methods=['GET'])
 def get_characters():
@@ -58,12 +66,14 @@ def get_characters():
     result = list(map(lambda character: character.serialize(), characters))
     return jsonify(result), 200
 
+
 @app.route('/characters/<int:character_id>', methods=['GET'])
 def get_character(character_id):
     character = Characters.query.get(character_id)
     if character == None:
-        return jsonify({"msg":"Characters no existe"}), 404
+        return jsonify({"msg": "Characters no existe"}), 404
     return jsonify(character.serialize()), 200
+
 
 @app.route('/usuario', methods=['GET'])
 def get_usuarios():
@@ -72,49 +82,46 @@ def get_usuarios():
     return jsonify(result), 200
 
 
-
 @app.route('/addfavoriteplanet/<int:id>/usuario/<int:id_usuario>', methods=['POST'])
 def add_planet(id, id_usuario):
     planet_query = Planets.query.get(id)
     usuario_query = Usuario.query.get(id_usuario)
-    favorite_planet = Favorite_planets(planet_name=planet_query.planet_name, user_id= usuario_query.id)
+    favorite_planet = Favorite_planets(
+        planet_name=planet_query.planet_name, user_id=usuario_query.id)
     db.session.add(favorite_planet)
     db.session.commit()
     respuesta = {
-    "message": "favorito agregado exitosamente"
+        "message": "favorito agregado exitosamente"
     }
     return jsonify(respuesta), 200
+
 
 @app.route('/addfavoritecharacter/<int:id>/usuario/<int:id_usuario>', methods=['POST'])
 def add_character(id, id_usuario):
     character_query = Characters.query.get(id)
     usuario_query = Usuario.query.get(id_usuario)
-    favorite_character = Favorite_characters(character_name=character_query.character_name, user_id= usuario_query.id)
+    favorite_character = Favorite_characters(
+        character_name=character_query.character_name, user_id=usuario_query.id)
     db.session.add(favorite_character)
     db.session.commit()
     respuesta = {
-    "message": "favorito agregado exitosamente"
+        "message": "favorito agregado exitosamente"
     }
     return jsonify(respuesta), 200
 
-@app.route('/deletefavoriteplanet/<int:id>/usuario/<int:id_usuario>', methods=['DELETE'])
-def delete_favorite_planet(id, id_usuario):
-    delete_planet = Favorite_planets.query.get(id)
+
+@app.route('/deletefavoriteplanet/<int:id>/usuario/<int:user_id>', methods=['DELETE'])
+def delete_favorite_planet(id, user_id):
+    delete_planet = Favorite_planets.filter_by(id=id, user_id=user_id)
     print(delete_planet)
-    usuario_query = Usuario.query.get(id_usuario)
-    print(usuario_query)
-    #if delete_planet is None:
-        #raise APIException('User not found', status_code=404)
-    #delete_planet = Favorite_planets(planet_name=planet_query.planet_name, user_id= usuario_query.id)
-    #db.session.pop(delete_planet)
-    #db.session.commit()
-    #respuesta = {
-    #"message": "favorito eliminado exitosamente"
-    #}
-   # return jsonify(respuesta), 200
-    #    db.session.delete(delete_planet)
-     #   db.session.commit()
-    #return jsonify(Favorite_planets),200
+    if delete_planet is None:
+        return jsonify({"msg": "No existe el favorito planeta"})
+    db.session.delete(delete_planet)
+    db.session.commit()
+    respuesta = {
+        "message": "favorito eliminado exitosamente"
+    }
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
