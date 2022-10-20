@@ -109,10 +109,9 @@ def add_character(id, id_usuario):
     }
     return jsonify(respuesta), 200
 
-
 @app.route('/deletefavoriteplanet/<int:id>/usuario/<int:user_id>', methods=['DELETE'])
 def delete_favorite_planet(id, user_id):
-    delete_planet = Favorite_planets.filter_by(id=id, user_id=user_id)
+    delete_planet= Favorite_planets.query.filter_by(id=id, user_id=user_id).first()
     print(delete_planet)
     if delete_planet is None:
         return jsonify({"msg": "No existe el favorito planeta"})
@@ -121,7 +120,20 @@ def delete_favorite_planet(id, user_id):
     respuesta = {
         "message": "favorito eliminado exitosamente"
     }
+    return respuesta,200
 
+@app.route('/deletefavoritecharacter/<int:id>/usuario/<int:user_id>', methods=['DELETE'])
+def delete_favorite_character(id, user_id):
+    delete_character= Favorite_characters.query.filter_by(id=id, user_id=user_id).first()
+    print(delete_character)
+    if delete_character is None:
+        return jsonify({"msg": "No existe el favorito character"})
+    db.session.delete(delete_character)
+    db.session.commit()
+    respuesta = {
+        "message": "favorito eliminado exitosamente"
+    }
+    return respuesta,200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

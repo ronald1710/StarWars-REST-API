@@ -13,7 +13,7 @@ class Planets(db.Model):
     url_imagen = db.Column(db.String(200), nullable=True)
 
     def __repr__(self):
-        return '<Planets %r>' % self.name
+        return '<Planets %r>' % self.planet_name
 
     def serialize(self):
         return {
@@ -37,7 +37,7 @@ class Characters(db.Model):
     url_imagen = db.Column(db.String(200), nullable=True)
 
     def __repr__(self):
-        return '<Characters %r>' % self.name
+        return '<Characters %r>' % self.character_name
 
     def serialize(self):
         return {
@@ -82,7 +82,7 @@ class Favorite_planets(db.Model):
     planets = db.relationship(Planets)
 
     def __repr__(self):
-        return '<Favorite_planets %r>' % self.name
+        return '<Favorite_planets %r>' % self.planet_name
 
     def serialize(self):
         return {
@@ -103,7 +103,7 @@ class Favorite_characters(db.Model):
     characters = db.relationship(Characters)
 
     def __repr__(self):
-        return '<Favorite_characters %r>' % self.name
+        return '<Favorite_characters %r>' % self.character_name
 
     def serialize(self):
         return {
